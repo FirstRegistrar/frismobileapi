@@ -6,7 +6,7 @@ const db1 = new Sequelize({
     host: process.env.DB_HOST,
     username: process.env.DB2_USER,
     password: process.env.DB2_PASS,
-    database: process.env.DB2_NAME,
+    database: process.env.DB_NAME,
     dialectOptions: {
         encrypt: false,
         requestTimeout: 260000,
