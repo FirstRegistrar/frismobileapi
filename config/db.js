@@ -4,9 +4,9 @@ const { Sequelize } = require('sequelize');
 const db1 = new Sequelize({
     dialect: 'mssql',
     host: process.env.DB_HOST,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
+    username: process.env.DB2_USER,
+    password: process.env.DB2_PASS,
+    database: process.env.DB2_NAME,
     dialectOptions: {
         encrypt: false,
         requestTimeout: 260000,
