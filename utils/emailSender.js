@@ -43,4 +43,5 @@ const sendEmail = async (mail, code) => {
     }
 };
 
-module.exports = { transporter, sendEmail };
+// ✅ Export matches how it's imported in your controller
+module.exports = sendEmail;
