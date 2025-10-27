@@ -43,5 +43,4 @@ const sendEmail = async (mail, code) => {
     }
 };
 
-// ✅ Export matches how it's imported in your controller
 module.exports = sendEmail;
