@@ -112,7 +112,7 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
     logger.error(`Unexpected error: ${err.message}`, { stack: err.stack });
 
-    const isProduction = false;
+    const isProduction = true;
     
     res.status(500).json({
         error: isProduction ? 'Fatal Error' : err.message,
