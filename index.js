@@ -68,7 +68,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());  // This allows cross-origin requests
 
 // Middleware
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 // Log every request with Winston
 app.use((req, res, next) => {
@@ -80,7 +81,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
     if (!authenticate(req)) {
         logger.warn(`Unauthorized access attempt on ${req.path}`);
-        return res.status(401).json({ error: 'Invalid API Key, Version 1.2.1' });
+        return res.status(401).json({ error: 'Invalid API Key, Version 1.2.2' });
     }
     next();
 });
@@ -99,7 +100,7 @@ app.use('/submitShareholdersForm', submitShareholdersFormRoute);
 
 // Default Route
 app.get('/', (req, res) => {
-    res.send('Welcome to the Estock Backend API 1.2.1');
+    res.send('Welcome to the Estock Backend API 1.2.2');
 });
 
 // Error Handling for Undefined Routes
