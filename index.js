@@ -108,10 +108,15 @@ app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
 });
 
-// General Error Handling Middleware
 app.use((err, req, res, next) => {
     logger.error(`Unexpected error: ${err.message}`, { stack: err.stack });
-    res.status(500).json({ error: 'Fatal Error' });
+
+    const isProduction = false;
+    
+    res.status(500).json({
+        error: isProduction ? 'Fatal Error' : err.message,
+        stack: isProduction ? undefined : err.stack
+    });
 });
 
 // Start the server

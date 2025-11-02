@@ -12,43 +12,51 @@ const transporter = nodeMailer.createTransport({
     tls: {
         rejectUnauthorized: false
     },
-    connectionTimeout: 60000, // 60 seconds
-    socketTimeout: 60000,     // 60 seconds
-    logger: true,             // Enable debug logging
-    debug: true               // Include connection details
+    connectionTimeout: 60000,
+    socketTimeout: 60000,
+    logger: true,
+    debug: true
 });
 
 const submitShareholdersForm = async (req, res) => {
-    const {
-        surname,
-        firstName,
-        otherNames,
-        address,
-        previousAddress,
-        city,
-        country,
-        mobileTelephone1,
-        mobileTelephone2,
-        emailAddress,
-        bvn,
-        nin,
-        passportNumber,
-        companies,
-        signature,
-        companySealImage,
-        userPassportImage,
-        ninSlipImage
-    } = req.body;
-
-    // Validate required fields
-    if (!surname || !firstName || !emailAddress) {
-        return res.status(400).json({ 
-            error: 'The following fields are required: surname, first name, and email address.' 
-        });
-    }
-
     try {
-        // Construct email body safely
+        const {
+            surname,
+            firstName,
+            otherNames,
+            address,
+            previousAddress,
+            city,
+            country,
+            mobileTelephone1,
+            mobileTelephone2,
+            emailAddress,
+            bvn,
+            nin,
+            passportNumber,
+            companies,
+            signature,
+            companySealImage,
+            userPassportImage,
+            ninSlipImage
+        } = req.body;
+
+        if (!surname || !firstName || !emailAddress) {
+            return res.status(400).json({
+                error: 'Missing required fields: surname, firstName, and emailAddress.'
+            });
+        }
+
+        // Convert companies safely if it's a stringified JSON
+        let parsedCompanies = companies;
+        try {
+            if (typeof companies === 'string') {
+                parsedCompanies = JSON.parse(companies);
+            }
+        } catch (err) {
+            console.error('Error parsing companies field:', err);
+        }
+
         const emailBody = `
             <h3>New Shareholder Form Submission</h3>
             <p><strong>Surname:</strong> ${surname || ''}</p>
@@ -64,12 +72,11 @@ const submitShareholdersForm = async (req, res) => {
             <p><strong>BVN:</strong> ${bvn || ''}</p>
             <p><strong>NIN:</strong> ${nin || ''}</p>
             <p><strong>Passport Number:</strong> ${passportNumber || ''}</p>
-            <p><strong>Companies:</strong> ${companies ? JSON.stringify(companies) : ''}</p>
+            <p><strong>Companies:</strong> ${JSON.stringify(parsedCompanies) || ''}</p>
         `;
 
-        // Prepare attachments (only include if valid and not empty)
+        // Only include attachments with real base64 content
         const attachments = [];
-
         const addAttachment = (filename, contentBase64) => {
             if (contentBase64 && typeof contentBase64 === 'string' && contentBase64.trim() !== '') {
                 attachments.push({
@@ -85,7 +92,6 @@ const submitShareholdersForm = async (req, res) => {
         addAttachment('UserPassport.png', userPassportImage);
         addAttachment('NINSlip.png', ninSlipImage);
 
-        // Mail options
         const mailOptions = {
             from: 'info@firstregistrarsnigeria.com',
             to: 'info@firstregistrarsnigeria.com',
@@ -95,31 +101,28 @@ const submitShareholdersForm = async (req, res) => {
             attachments
         };
 
-        // Send email
+        console.log('Sending email with options:', {
+            to: mailOptions.to,
+            cc: mailOptions.cc,
+            attachmentsCount: attachments.length
+        });
+
         const mailSent = await transporter.sendMail(mailOptions);
+        console.log('Mail sent response:', mailSent);
 
-        if (mailSent) {
-            return res.status(200).json({
-                success: true,
-                message: 'Shareholder form successfully submitted and emailed.'
-            });
-        } else {
-            return res.status(500).json({
-                success: false,
-                message: 'The form could not be sent. Please contact support.'
-            });
-        }
+        return res.status(200).json({
+            success: true,
+            message: 'Shareholder form successfully submitted and emailed.'
+        });
+
     } catch (error) {
-        console.error('Error submitting shareholder form:', error);
+        console.error('Full backend error:', error);
 
+        // Return full details for debugging
         return res.status(500).json({
             success: false,
-            message: 'An error occurred while processing your request.',
-            errorDetails: {
-                name: error.name,
-                message: error.message,
-                stack: error.stack
-            }
+            error: error.message || 'Unknown server error',
+            stack: error.stack || null
         });
     }
 };
