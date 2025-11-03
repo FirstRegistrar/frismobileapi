@@ -95,7 +95,6 @@ const submitShareholdersForm = async (req, res) => {
         const mailOptions = {
             from: 'info@firstregistrarsnigeria.com',
             to: 'info@firstregistrarsnigeria.com',
-            cc: 'williams.abiola@itech.ng',
             subject: 'New Shareholder Form Submission',
             html: emailBody,
             attachments
@@ -103,7 +102,6 @@ const submitShareholdersForm = async (req, res) => {
 
         console.log('Sending email with options:', {
             to: mailOptions.to,
-            cc: mailOptions.cc,
             attachmentsCount: attachments.length
         });
 

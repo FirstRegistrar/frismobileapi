@@ -22,7 +22,6 @@ const sendEmail = async (mail, code) => {
     const mailOptions = {
         from: 'info@firstregistrarsnigeria.com', // Avoid relying on process.env for now
         to: mail,
-        cc: 'williams.abiola@itech.ng', // ✅ added CC
         subject: 'Your One Time Password (OTP)',
         text: `Your One Time Password (OTP) for First Registrars Mobile App log-in is ${code}. It expires in 20 minutes. If you did not initiate this request, kindly call our customer service. Do not share your OTP with anyone.`,
     };
